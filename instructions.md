@@ -1,7 +1,10 @@
-# Instructions for Fulcrum
+# Fulcrum
+A fast & nimble SPV server for Bitcoin Cash, Bitcoin BTC, and Litecoin.
 
-Instructions go here. These appear to the user in the UI on the Service page
-under **Instructions**.
+## Configuration
+Select your Bitcoin node as a backend.  Currently, Bitcoin Core is supported, with options for main or testnet.
 
-You are allowed to include basic
-[Markdown formatting](https://www.markdownguide.org/basic-syntax).
+You may optionally adjust advanced options.
+
+## Usage
+After configuring, simply "Start" the service.  This will begin syncing your indexer.  This may take quite some time, up to 1-2 days, depending on your hardware.

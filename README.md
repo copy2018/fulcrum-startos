@@ -3,18 +3,16 @@
 </p>
 
 # Fulcrum for StartOS
-
 Fulcrum is a drop-in replacement for ElectronX/ElectrumX server that runs on StartOS.
 This repository creates the `s9pk` package that is installed to run `fulcrum` on [StartOS](https://github.com/Start9Labs/start-os/). Learn more about service packaging in the [Developer Docs](https://start9.com/latest/developer-docs/).
 
 ## Dependencies
-
 Install the system dependencies below to build this project by following the instructions in the provided links. You can find instructions on how to set up the appropriate build environment in the [Developer Docs](https://docs.start9.com/latest/developer-docs/packaging).
 
 - [docker](https://docs.docker.com/get-docker)
 - [docker-buildx](https://docs.docker.com/buildx/working-with-buildx/)
 - [yq](https://mikefarah.gitbook.io/yq)
-- [deno](https://deno.land/)
+- [deno](https://deno.land/)git remote add upstream https://github.com/whoever/whatever.git
 - [make](https://www.gnu.org/software/make/)
 - [start-sdk](https://github.com/Start9Labs/start-os/tree/sdk/)
 
@@ -67,7 +65,6 @@ start-sdk --version
 Now you are ready to build the `fulcrum` package!
 
 ## Cloning
-
 Clone the project locally:
 
 ```
@@ -77,7 +74,6 @@ git submodule update --init --recursive
 ```
 
 ## Building
-
 To build the `fulcrum` package for all platforms using start-sdk, run the following command:
 
 ```
@@ -97,7 +93,6 @@ make arm
 ```
 
 ## Installing (on StartOS)
-
 Run the following commands to determine successful install:
 > :information_source: Change server-name.local to your Start9 server address
 
@@ -116,7 +111,6 @@ make install
 > **Tip:** You can also install the fulcrum.s9pk using **Sideload Service** under the **System > Manage** section.
 
 ### Verify Install
-
 Go to your StartOS Services page, select **Fulcrum**, configure and start the service. Then, verify its interfaces are accessible.
 
 **Done!**
