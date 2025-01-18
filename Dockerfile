@@ -1,11 +1,37 @@
 FROM debian:bullseye AS builder
 
-LABEL maintainer.0="linkinparkrulz <linkinparkrulz@protonmail.com>" 
+ARG ARCH=aarch64
 
-ARG MAKEFLAGS
+# Common packages
+RUN apt update -y && apt install -y \
+    git \
+    pkg-config \
+    qt5-qmake
 
-RUN apt update -y && \
-    apt install -y openssl git build-essential pkg-config zlib1g-dev libbz2-dev libjemalloc-dev libzmq3-dev qtbase5-dev qt5-qmake
+# Architecture-specific setup
+RUN if [ "$ARCH" = "aarch64" ]; then \
+        dpkg --add-architecture arm64 && \
+        apt update && \
+        apt install -y \
+        crossbuild-essential-arm64 \
+        openssl:arm64 \
+        zlib1g-dev:arm64 \
+        libbz2-dev:arm64 \
+        libjemalloc-dev:arm64 \
+        libzmq3-dev:arm64 \
+        qtbase5-dev:arm64; \
+        export CC=aarch64-linux-gnu-gcc; \
+        export CXX=aarch64-linux-gnu-g++; \
+    else \
+        apt install -y \
+        build-essential \
+        openssl \
+        zlib1g-dev \
+        libbz2-dev \
+        libjemalloc-dev \
+        libzmq3-dev \
+        qtbase5-dev; \
+    fi
 
 WORKDIR /src
 
@@ -13,9 +39,13 @@ RUN git clone --branch v1.11.1 https://github.com/cculianu/Fulcrum.git . && \
     git checkout v1.11.1
 
 RUN qmake -makefile PREFIX=/usr "QMAKE_CXXFLAGS_RELEASE -= -O3" "QMAKE_CXXFLAGS_RELEASE += -O1" Fulcrum.pro && \
-    make install
+    make -j1 install
 
-RUN strip Fulcrum
+RUN if [ "$ARCH" = "aarch64" ]; then \
+        aarch64-linux-gnu-strip Fulcrum; \
+    else \
+        strip Fulcrum; \
+    fi
 
 FROM debian:bullseye-slim
 
