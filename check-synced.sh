@@ -1,58 +1,67 @@
 #!/bin/bash
 
 DURATION=$(</dev/stdin)
-if (($DURATION <= 9000 )); then
-    exit 60
-else
- set -e
-
- b_type=$(yq '.bitcoind.type' /data/start9/config.yaml)
- b_host="${b_type}.embassy"
-
- if [ "$b_host" = "bitcoind-testnet.embassy" ]; then
-    b_port=48332
- else
-    b_port=8332
- fi
-
- b_username=$(yq '.bitcoind.username' /data/start9/config.yaml)
- b_password=$(yq '.bitcoind.password' /data/start9/config.yaml)
-
- #Get blockchain info from the bitcoin rpc
- b_gbc_result=$(curl -sS --user $b_username:$b_password --data-binary '{"jsonrpc": "1.0", "id": "sync-hck", "method": "getblockchaininfo", "params": []}' -H 'content-type: text/plain;' http://$b_host:$b_port/ 2>&1)
- error_code=$?
- b_gbc_error=$(echo $b_gbc_result | yq '.error' -)
- if [[ $error_code -ne 0 ]]; then
-    echo "Error contacting Bitcoin RPC: $b_gbc_result" >&2
-    exit 61
- elif [ "$b_gbc_error" != "null" ] ; then
-    #curl returned ok, but the "good" result could be an error like:
-    # '{"result":null,"error":{"code":-28,"message":"Verifying blocks…"},"id":"sync-hck"}'
-    # meaning bitcoin is not yet synced.  Display that "message" and exit:
-    echo "Bitcoin RPC returned error: $b_gbc_error" >&2
-    exit 61
- fi
-
- b_block_count=$(echo "$b_gbc_result" | yq '.result.blocks' -)
- b_block_ibd=$(echo "$b_gbc_result" | yq '.result.initialblockdownload' -)
- if [ "$b_block_count" = "null" ]; then
-    echo "Error ascertaining Bitcoin blockchain status: $b_gbc_error" >&2
-    exit 61
- elif [ "$b_block_ibd" != "false" ] ; then
-    b_block_hcount=$(echo "$b_gbc_result" | yq '.result.headers' -)
-    echo -n "Bitcoin blockchain is not fully synced yet: $b_block_count of $b_block_hcount blocks" >&2
-    echo " ($(expr ${b_block_count}00 / $b_block_hcount)%)" >&2
-    exit 61
- else
-    #Check to make sure the Fulcrum RPC is actually up and responding
-    features_res=$(echo '{"jsonrpc": "2.0", "method": "server.features", "params": [], "id": 0}' | netcat -w 1 127.0.0.1 50001)
-    server_string=$(echo "$features_res" | yq '.result.server_version')
-    if [ -n "$server_string" ] ; then
-        #Index is synced to tip
-        exit 0
-    else
-        echo "Fulcrum RPC is not responding." >&2
-        exit 61
-    fi
- fi
+if ((DURATION <= 9000)); then
+   exit 60
 fi
+
+set -e
+
+btc_type=$(yq '.bitcoind.type' /data/start9/config.yaml)
+btc_host="${btc_type}.embassy"
+
+if [ "$btc_host" = "bitcoind-testnet.embassy" ]; then
+   btc_port=48332
+else
+   btc_port=8332
+fi
+
+btc_url="http://$btc_host:$btc_port"
+
+user=$(yq '.bitcoind.username' /data/start9/config.yaml)
+pass=$(yq '.bitcoind.password' /data/start9/config.yaml)
+credentials="$user:$pass"
+rpc_method='{"jsonrpc": "1.0", "method": "getblockchaininfo"}'
+req_headers='content-type: text/plain;'
+
+# Get blockchain info from the bitcoin rpc
+if ! chain_info=$(curl -sS --user "$credentials" --data-binary "$rpc_method" -H "$req_headers" "$btc_url"/ 2>&1); then
+   echo "Error contacting Bitcoin RPC: $chain_info" >&2
+   exit 61
+fi
+
+resp_error=$(echo "$chain_info" | yq '.error' -)
+if [ "$resp_error" != "null" ]; then
+   # request ok, but is an error; for example:'{"result":null,"error":{"code":-28,"message":"Verifying blocks…"}'
+
+   err_message=$(echo "$resp_error" | yq '.message' -)
+   echo "Bitcoin RPC returned error: $err_message" >&2
+   exit 61
+fi
+
+block_count=$(echo "$chain_info" | yq '.result.blocks' -)
+ibd=$(echo "$chain_info" | yq '.result.initialblockdownload' -)
+
+if [ "$ibd" != "false" ]; then
+   header_count=$(echo "$chain_info" | yq '.result.headers' -)
+
+   echo -n "Bitcoin blockchain is not fully synced yet: $block_count of $header_count blocks" >&2
+   echo " ($((block_count * 100 / header_count))%)" >&2
+   exit 61
+fi
+
+json_version='{"jsonrpc": "2.0", "method": "server.version", "id": 0}'
+if echo "$json_version" | netcat -w 1 127.0.0.1 50001 &>/dev/null; then
+   # Index is synced to tip
+   exit 0
+fi
+
+fulcrum_log="$(tail -n1 /data/fulcrum.log)"
+if [ -z "$fulcrum_log" ]; then
+   echo "Fulcrum RPC is not responding." >&2
+   exit 61
+fi
+
+# echo log message, removing timestamp and <Controller>
+echo "${fulcrum_log#*> }" >&2
+exit 61
