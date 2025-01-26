@@ -82,6 +82,7 @@ RUN chmod a+x /usr/local/bin/docker_entrypoint.sh
 # CMD ["Fulcrum"]
 
 # Add health check scripts
-COPY ./check-synced.sh /usr/local/bin/check-synced.sh
-COPY ./check-electrum.sh /usr/local/bin/check-electrum.sh
-RUN chmod +x /usr/local/bin/check-synced.sh /usr/local/bin/check-electrum.sh
+ADD ./actions/*.sh /usr/local/bin/
+ADD ./health-check/*.sh /usr/local/bin/
+ADD ./docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
+RUN chmod a+x /usr/local/bin/*.sh
