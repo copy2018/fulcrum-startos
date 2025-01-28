@@ -1,4 +1,4 @@
-FROM debian:bullseye AS builder
+FROM --platform=$BUILDPLATFORM debian:bullseye AS builder
 
 ARG ARCH=aarch64
 
@@ -38,12 +38,18 @@ WORKDIR /src
 RUN git clone --branch v1.11.1 https://github.com/cculianu/Fulcrum.git . && \
     git checkout v1.11.1
 
-RUN qmake -makefile PREFIX=/usr "QMAKE_CXXFLAGS_RELEASE -= -O3" "QMAKE_CXXFLAGS_RELEASE += -O1" Fulcrum.pro && \
-    make -j1 install
-
 RUN if [ "$ARCH" = "aarch64" ]; then \
+        aarch64-linux-gnu-qmake -makefile PREFIX=/usr \
+            "QMAKE_CXXFLAGS_RELEASE -= -O3" \
+            "QMAKE_CXXFLAGS_RELEASE += -O1" \
+            "LIBS += -L/src/staticlibs/rocksdb/bin/linux/aarch64" \
+            Fulcrum.pro \
+            && \
+        make -j1 install && \
         aarch64-linux-gnu-strip Fulcrum; \
     else \
+        qmake -makefile PREFIX=/usr "QMAKE_CXXFLAGS_RELEASE -= -O3" "QMAKE_CXXFLAGS_RELEASE += -O1" Fulcrum.pro && \
+        make -j1 install && \
         strip Fulcrum; \
     fi
 
@@ -76,6 +82,7 @@ RUN chmod a+x /usr/local/bin/docker_entrypoint.sh
 # CMD ["Fulcrum"]
 
 # Add health check scripts
-COPY ./check-synced.sh /usr/local/bin/check-synced.sh
-COPY ./check-electrum.sh /usr/local/bin/check-electrum.sh
-RUN chmod +x /usr/local/bin/check-synced.sh /usr/local/bin/check-electrum.sh
+ADD ./actions/*.sh /usr/local/bin/
+ADD ./health-check/*.sh /usr/local/bin/
+ADD ./docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
+RUN chmod a+x /usr/local/bin/*.sh

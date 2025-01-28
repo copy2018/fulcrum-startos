@@ -146,3 +146,21 @@ migrations:
     "*":
       type: script
       args: ["to"]
+actions:
+  reset-indexes:
+    name: "Reset Index"
+    description: "Deletes and rebuilds all Fulcrum indexes. Use this if you experience database corruption or need to start fresh."
+    warning: "This will delete all indexes. The service will need to resync which may take several hours."
+    allowed-statuses:
+      - stopped
+      - running
+    implementation:
+      type: docker
+      system: false
+      image: main
+      entrypoint: reset-indexes.sh
+      args: []
+      inject: true
+      io-format: json
+      mounts:
+          main: /root/.fulcrum

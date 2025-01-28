@@ -56,4 +56,4 @@ data:
 EOF
 
 configurator
-exec tini -p SIGTERM -- Fulcrum /data/fulcrum.conf
+exec tini -p SIGTERM -- Fulcrum /data/fulcrum.conf | tee /data/fulcrum.log
