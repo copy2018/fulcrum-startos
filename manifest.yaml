@@ -71,7 +71,9 @@ interfaces:
       - tcp
       - http
       - electrum
-alerts: {}
+alerts:
+  install: "WARNING: Fulcrum is resource intesive.  It will require up to 2GB of RAM during sync, and over 300GB of disk.  This means that an archival Bitcoin node (~800GB) combined with Fulcrum WILL REQUIRE greater than 1TB of disk space.  A 2TB DRIVE IS THE MINIMUM TO RUN THIS STACK!  IGNORE THIS AT THE RISK OF YOUR SERVER!!!"
+  start: "WARNING: Fulcrum is resource intesive.  It will require up to 2GB of RAM during sync, and over 300GB of disk.  This means that an archival Bitcoin node (~800GB) combined with Fulcrum WILL REQUIRE greater than 1TB of disk space.  A 2TB DRIVE IS THE MINIMUM TO RUN THIS STACK!  IGNORE THIS AT THE RISK OF YOUR SERVER!!!"
 dependencies:
   btc-rpc-proxy:
     version: ">=0.3.2.1 <0.5.0"
