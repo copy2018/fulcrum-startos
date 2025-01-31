@@ -17,5 +17,5 @@ if [ -z "$fulcrum_log" ]; then
 fi
 
 # echo log message, removing timestamp and <Controller>
-echo "${fulcrum_log#*> }" >&2
-exit 61
+# echo "${fulcrum_log#*> }" >&2
+# exit 61
