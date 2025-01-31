@@ -26,8 +26,8 @@ main:
     main: /data
 health-checks:
   electrum:
-    name: Electrum RPC Interface
-    success-message: The electrum RPC interface is alive and responding to basic commands.
+    name: Fulcrum RPC Interface
+    success-message: The Fulcrum RPC interface is alive and responding to basic commands.
     type: docker
     image: main
     entrypoint: "check-electrum.sh"
@@ -57,8 +57,8 @@ volumes:
     type: data
 interfaces:
   electrum:
-    name: Electrum Interface
-    description: Serves an electrum API for use with compatible wallets
+    name: Fulcrum Interface
+    description: Serves an SPV API for use with compatible wallets
     tor-config:
       port-mapping:
         50001: "50001"
@@ -72,8 +72,8 @@ interfaces:
       - http
       - electrum
 alerts:
-  install: "WARNING: Fulcrum is resource intesive.  It will require up to 2GB of RAM during sync, and over 300GB of disk.  This means that an archival Bitcoin node (~800GB) combined with Fulcrum WILL REQUIRE greater than 1TB of disk space.  A 2TB DRIVE IS THE MINIMUM TO RUN THIS STACK!  IGNORE THIS AT THE RISK OF YOUR SERVER!!!"
-  start: "WARNING: Fulcrum is resource intesive.  It will require up to 2GB of RAM during sync, and over 300GB of disk.  This means that an archival Bitcoin node (~800GB) combined with Fulcrum WILL REQUIRE greater than 1TB of disk space.  A 2TB DRIVE IS THE MINIMUM TO RUN THIS STACK!  IGNORE THIS AT THE RISK OF YOUR SERVER!!!"
+  install: "WARNING: Fulcrum is resource intesive.  It will require up to 1GB of RAM during sync, and over 300GB of disk.  This means that an archival Bitcoin node (~800GB) combined with Fulcrum WILL REQUIRE greater than 1TB of disk space.  A 2TB DRIVE IS THE MINIMUM TO RUN THIS STACK!  IGNORE THIS AT THE RISK OF YOUR SERVER!!!"
+  start: "WARNING: Fulcrum is resource intesive.  It will require up to 1GB of RAM during sync, and over 300GB of disk.  This means that an archival Bitcoin node (~800GB) combined with Fulcrum WILL REQUIRE greater than 1TB of disk space.  A 2TB DRIVE IS THE MINIMUM TO RUN THIS STACK!  IGNORE THIS AT THE RISK OF YOUR SERVER!!!"
 dependencies:
   btc-rpc-proxy:
     version: ">=0.3.2.1 <0.5.0"
@@ -146,21 +146,21 @@ migrations:
     "*":
       type: script
       args: ["to"]
-actions:
-  reset-indexes:
-    name: "Reset Index"
-    description: "Deletes and rebuilds all Fulcrum indexes. Use this if you experience database corruption or need to start fresh."
-    warning: "This will delete all indexes. The service will need to resync which may take several hours."
-    allowed-statuses:
-      - stopped
-      - running
-    implementation:
-      type: docker
-      system: false
-      image: main
-      entrypoint: reset-indexes.sh
-      args: []
-      inject: true
-      io-format: json
-      mounts:
-          main: /root/.fulcrum
+# actions:
+#   reset-indexes:
+#     name: "Reset Index"
+#     description: "Deletes and rebuilds all Fulcrum indexes. Use this if you experience database corruption or need to start fresh."
+#     warning: "This will delete all indexes. The service will need to resync which may take several hours."
+#     allowed-statuses:
+#       - stopped
+#       - running
+#     implementation:
+#       type: docker
+#       system: false
+#       image: main
+#       entrypoint: reset-indexes.sh
+#       args: []
+#       inject: true
+#       io-format: json
+#       mounts:
+#           main: /root/.fulcrum
