@@ -3,7 +3,7 @@
 </p>
 
 # Fulcrum for StartOS
-Fulcrum is a drop-in replacement for ElectronX/ElectrumX server that runs on StartOS.
+Fulcrum is a drop-in replacement for Electrs/ElectrumX server that runs on StartOS.
 This repository creates the `s9pk` package that is installed to run `fulcrum` on [StartOS](https://github.com/Start9Labs/start-os/). Learn more about service packaging in the [Developer Docs](https://start9.com/latest/developer-docs/).
 
 ## Dependencies
