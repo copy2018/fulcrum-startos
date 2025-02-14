@@ -62,10 +62,6 @@ interfaces:
     tor-config:
       port-mapping:
         50001: "50001"
-    # lan-config:
-    #   443:
-    #     ssl: true
-    #     internal: 50001
     ui: false
     protocols:
       - tcp
@@ -75,17 +71,6 @@ alerts:
   install: "WARNING: Fulcrum requires significant system resources: 1GB+ RAM during sync and 160GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure."
   start: "WARNING: Fulcrum requires significant system resources: 1GB+ RAM during sync and 160GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure."
 dependencies:
-  btc-rpc-proxy:
-    version: ">=0.3.2.1 <0.5.0"
-    requirement:
-      type: "opt-out"
-      how: Set "Bitcoin Core" to 'Bitcoin Core'"
-    description: Provides bitcoin rpc interface needed for info about fees, blockchain, mempool, network, and transactions. Can also use bitcoind for rpc interface, or an external node for both.
-    config:
-      check:
-        type: script
-      auto-configure:
-        type: script
   bitcoind:
     version: ">=0.21.1.2 <29.0.0"
     requirement:

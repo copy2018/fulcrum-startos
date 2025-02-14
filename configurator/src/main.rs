@@ -57,11 +57,6 @@ enum BitcoinCoreConfig {
         username: String,
         password: String,
     },
-    #[serde(rename = "bitcoind-proxy")]
-    BitcoindProxy {
-        username: String,
-        password: String,
-    },
     #[serde(rename = "bitcoind-testnet")]
     BitcoindTestnet {
         username: String,
@@ -115,9 +110,6 @@ fn main() -> Result<(), anyhow::Error> {
                 BitcoinCoreConfig::Bitcoind { username, password } => {
                     let hostname = format!("{}", "bitcoind.embassy");
                     (username, password, hostname.clone(), 8332)
-                }
-                BitcoinCoreConfig::BitcoindProxy { username, password } => {
-                    (username, password, format!("{}", "btc-rpc-proxy.embassy"), 8332)
                 }
                 BitcoinCoreConfig::BitcoindTestnet { username, password } => {
                     let hostname = format!("{}", "bitcoind-testnet.embassy");

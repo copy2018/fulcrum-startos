@@ -68,8 +68,6 @@ ENV DATA_DIR=/data
 ENV SSL_CERTFILE=${DATA_DIR}/fulcrum.crt
 ENV SSL_KEYFILE=${DATA_DIR}/fulcrum.key
 
-#EXPOSE 50001 50002
-
 ARG PLATFORM
 ARG ARCH
 ARG TARGETARCH
@@ -77,12 +75,8 @@ RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/d
 ADD ./configurator/target/${ARCH}-unknown-linux-musl/release/configurator /usr/local/bin/configurator
 COPY ./docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
 RUN chmod a+x /usr/local/bin/docker_entrypoint.sh
-# ENTRYPOINT ["/entrypoint.sh"]
-
-# CMD ["Fulcrum"]
 
 # Add health check scripts
-ADD ./actions/*.sh /usr/local/bin/
 ADD ./health-check/*.sh /usr/local/bin/
 ADD ./docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
 RUN chmod a+x /usr/local/bin/*.sh
