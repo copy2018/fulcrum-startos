@@ -73,7 +73,7 @@ RUN git clone --branch v1.11.1 --depth 1 https://github.com/cculianu/Fulcrum.git
 # Final stage
 FROM debian:bullseye-slim
 
-# Redeclare necessary ARGs - make sure these are passed during build
+# Redeclare necessary ARGs
 ARG ARCH
 ARG TARGETARCH
 ARG TARGETPLATFORM
@@ -84,16 +84,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SSL_CERTFILE=/data/fulcrum.crt \
     SSL_KEYFILE=/data/fulcrum.key
 
-# Install runtime dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        openssl \
-        libqt5network5 \
-        zlib1g \
-        libbz2-1.0 \
-        libjemalloc2 \
-        libzmq5 \
-        tini \
+# Install runtime dependencies all at once to reduce layers and potential QEMU issues
+RUN dpkg --add-architecture arm64 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openssl:arm64 \
+        libqt5network5:arm64 \
+        zlib1g:arm64 \
+        libbz2-1.0:arm64 \
+        libjemalloc2:arm64 \
+        libzmq5:arm64 \
+        tini:arm64 \
         wget \
         curl \
         netcat \
