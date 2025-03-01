@@ -34,7 +34,7 @@ version: 2
 data:
   Quick Connect URL:
     type: string
-    value: $TOR_ADDRESS:50001:t
+    value: $TOR_ADDRESS:50003:t
     description: For scanning into wallets such as BlueWallet
     copyable: true
     qr: true
@@ -48,7 +48,7 @@ data:
     masked: true
   Port:
     type: string
-    value: "50001"
+    value: "50003"
     description: Port to input into wallet software such as Sparrow.
     copyable: true
     qr: false

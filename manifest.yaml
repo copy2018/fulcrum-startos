@@ -61,7 +61,7 @@ interfaces:
     description: Provides a fast, efficient Electrum protocol interface that allows lightweight wallets to query blockchain data and broadcast transactions without downloading the full blockchain.
     tor-config:
       port-mapping:
-        50001: "50001"
+        50003: "50003"
     ui: false
     protocols:
       - tcp
